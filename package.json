@@ -1,13 +1,14 @@
-
 {
-  "name": "mi-servidor",
+  "name": "octolearn",
   "version": "1.0.0",
-  "description": "Servidor para aplicacion Android",
-  "main": "index.js",
+  "private": true,
+  "description": "OctoLearn - an immersive English learning platform with an octopus mascot.",
+  "type": "module",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
-  "dependencies": {
-    "express": "^4.21.2"
+  "engines": {
+    "node": ">=18"
   }
 }

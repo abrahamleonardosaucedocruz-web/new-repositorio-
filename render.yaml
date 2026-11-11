@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: octolearn
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+    # NOTE: the free plan has no persistent disk, so the JSON database resets
+    # on every redeploy. Add a disk on a paid instance if you want persistence:
+    # disk:
+    #   name: octolearn-data
+    #   mountPath: /data
+    #   sizeGB: 1

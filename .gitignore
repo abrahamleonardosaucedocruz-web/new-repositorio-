@@ -1,0 +1,11 @@
+node_modules
+data
+dist
+android/.gradle
+android/build
+android/app/build
+android/.idea
+android/local.properties
+android/octolearn-release.jks
+*.log
+.DS_Store
