@@ -507,4 +507,33 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`[OctoLearn] Running at http://localhost:${PORT}`);
   console.log(`[OctoLearn] Owner: ${OWNER_EMAIL}`);
+  startKeepAlive();
 });
+
+/* -------------------------------- keep-alive ------------------------------- */
+// On Render's free plan a web service sleeps after 15 minutes without traffic.
+// Pinging our own public URL every 10 minutes keeps it awake around the clock.
+// Set KEEP_ALIVE=false to turn this off, or KEEP_ALIVE_URL to override the host.
+function startKeepAlive() {
+  if (String(process.env.KEEP_ALIVE || '').toLowerCase() === 'false') return;
+
+  const base = process.env.KEEP_ALIVE_URL || process.env.RENDER_EXTERNAL_URL || '';
+  if (!base) {
+    console.log('[OctoLearn] Keep-alive off: no public URL available.');
+    return;
+  }
+
+  const target = `${base.replace(/\/+$/, '')}/api/config`;
+  const everyMs = Number(process.env.KEEP_ALIVE_INTERVAL_MS) || 10 * 60 * 1000;
+
+  setInterval(async () => {
+    try {
+      const res = await fetch(target);
+      console.log(`[OctoLearn] keep-alive ${res.status} ${target}`);
+    } catch (err) {
+      console.warn(`[OctoLearn] keep-alive failed: ${err.message}`);
+    }
+  }, everyMs);
+
+  console.log(`[OctoLearn] Keep-alive every ${Math.round(everyMs / 60000)} min -> ${target}`);
+}
