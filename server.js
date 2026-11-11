@@ -459,7 +459,8 @@ const MIME = {
   '.jpg': 'image/jpeg',
   '.ico': 'image/x-icon',
   '.mp3': 'audio/mpeg',
-  '.woff2': 'font/woff2'
+  '.woff2': 'font/woff2',
+  '.apk': 'application/vnd.android.package-archive'
 };
 
 function serveStatic(req, res, url) {
