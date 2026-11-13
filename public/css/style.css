@@ -26,6 +26,10 @@
   --violet-l: #ece9fb;
   --sky: #2b7fa8;
 
+  /* background wash, re-tinted by each theme below */
+  --wash-1: rgba(15, 107, 115, 0.16);
+  --wash-2: rgba(226, 97, 60, 0.13);
+
   --shadow-1: 0 1px 2px rgba(22, 35, 58, 0.05);
   --shadow-2: 0 6px 20px rgba(22, 35, 58, 0.07);
   --shadow-3: 0 18px 46px rgba(22, 35, 58, 0.14);
@@ -41,6 +45,48 @@
 
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
+}
+
+/* -------------------------------- themes ---------------------------------- */
+/* Chosen from the profile screen (Look & feel). Only the primary accent family
+   changes, so every screen keeps its contrast. */
+
+[data-theme="coral"] {
+  --teal: #b8502f; --teal-d: #8f3c22; --teal-l: #fbe7de; --sky: #c1663a;
+  --wash-1: rgba(184, 80, 47, 0.17); --wash-2: rgba(207, 154, 43, 0.14);
+}
+[data-theme="violet"] {
+  --teal: #6a5ad0; --teal-d: #4d3fa8; --teal-l: #ece9fb; --sky: #7d6ee0;
+  --wash-1: rgba(106, 90, 208, 0.16); --wash-2: rgba(226, 97, 60, 0.12);
+}
+[data-theme="forest"] {
+  --teal: #2f7a55; --teal-d: #225c3f; --teal-l: #e4f2ea; --sky: #3b8a73;
+  --wash-1: rgba(47, 122, 85, 0.16); --wash-2: rgba(207, 154, 43, 0.13);
+}
+[data-theme="sky"] {
+  --teal: #2b7fa8; --teal-d: #1f5f80; --teal-l: #e2eff5; --sky: #3b93bd;
+  --wash-1: rgba(43, 127, 168, 0.16); --wash-2: rgba(226, 97, 60, 0.12);
+}
+[data-theme="gold"] {
+  --teal: #b1861f; --teal-d: #8a6412; --teal-l: #f8efd9; --sky: #c19a3a;
+  --wash-1: rgba(177, 134, 31, 0.16); --wash-2: rgba(15, 107, 115, 0.12);
+}
+
+.theme-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px; margin-top: 14px;
+}
+.theme-pick {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 13px 8px; border-radius: var(--r-sm); background: var(--paper-2);
+  border: 1.5px solid var(--line); transition: border-color 0.2s, transform 0.12s;
+}
+.theme-pick:active { transform: scale(0.97); }
+.theme-pick.on { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal-l); }
+.theme-pick.on .tiny { font-weight: 700; color: var(--teal-d); }
+.theme-pick .dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(22, 35, 58, 0.1);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -70,8 +116,8 @@ img, svg { display: block; }
 .wash, .grain { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 .wash {
   background:
-    radial-gradient(900px 460px at 12% -8%, rgba(15, 107, 115, 0.16), transparent 62%),
-    radial-gradient(760px 420px at 96% -2%, rgba(226, 97, 60, 0.13), transparent 60%),
+    radial-gradient(900px 460px at 12% -8%, var(--wash-1), transparent 62%),
+    radial-gradient(760px 420px at 96% -2%, var(--wash-2), transparent 60%),
     linear-gradient(180deg, #f7f5ee 0%, var(--paper) 42%);
 }
 .grain {

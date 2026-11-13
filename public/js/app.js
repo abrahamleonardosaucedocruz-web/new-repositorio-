@@ -167,6 +167,33 @@ function shuffle(arr) {
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+/* --------------------------------- themes --------------------------------- */
+// Every learner can choose the colour of the interface. The pick is kept on the
+// device, so it survives reloads without needing anything from the server.
+const THEMES = [
+  { id: 'teal', name: 'Lagoon', swatch: '#0f6b73' },
+  { id: 'coral', name: 'Coral', swatch: '#b8502f' },
+  { id: 'violet', name: 'Orchid', swatch: '#6a5ad0' },
+  { id: 'forest', name: 'Kelp', swatch: '#2f7a55' },
+  { id: 'sky', name: 'Deep Sea', swatch: '#2b7fa8' },
+  { id: 'gold', name: 'Sunset', swatch: '#b1861f' }
+];
+const THEME_KEY = 'octolearn-theme';
+
+function currentTheme() {
+  try { return localStorage.getItem(THEME_KEY) || 'teal'; } catch { return 'teal'; }
+}
+
+function applyTheme(id) {
+  const theme = THEMES.find((t) => t.id === id) || THEMES[0];
+  if (theme.id === 'teal') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', theme.id);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme.swatch);
+  try { localStorage.setItem(THEME_KEY, theme.id); } catch { /* private mode */ }
+  return theme.id;
+}
+
 /* --------------------------------- mascot --------------------------------- */
 
 let octoSeq = 0;
@@ -837,17 +864,24 @@ async function viewLesson(view, id) {
         </div>
         <div class="quiz-prompt">Choose the sentence you heard:</div>
         <div class="choices" id="choices">
-          ${ex.options.map((o, i) => `<button class="choice" data-val="${esc(o)}">
-            <span class="choice-key">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`).join('')}
+          ${choiceButtons(ex.options)}
         </div>`;
     }
 
     return `
       <div class="quiz-prompt">${esc(ex.prompt)}</div>
       <div class="choices" id="choices">
-        ${ex.options.map((o, i) => `<button class="choice" data-val="${esc(o)}">
-          <span class="choice-key">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`).join('')}
+        ${choiceButtons(ex.options)}
       </div>`;
+  }
+
+  // The options are stored with the right answer first, so we shuffle them and
+  // let the correct one land in a different place on every attempt.
+  function choiceButtons(options) {
+    return shuffle(options)
+      .map((o, i) => `<button class="choice" data-val="${esc(o)}">
+        <span class="choice-key">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`)
+      .join('');
   }
 
   function bindChoice(ex) {
@@ -1565,6 +1599,18 @@ async function viewProfile(view) {
         ${badgeGrid(state.content.badges)}
       </section>
 
+      <section class="card">
+        <div class="card-head"><h3 class="card-title">${icon('spark', 'ico')} Look &amp; feel</h3></div>
+        <p class="tiny muted">Pick the colour you like best. It stays on this device.</p>
+        <div class="theme-grid">
+          ${THEMES.map((t) => `
+            <button class="theme-pick ${t.id === currentTheme() ? 'on' : ''}" data-theme-pick="${t.id}">
+              <span class="dot" style="background:${t.swatch}"></span>
+              <span class="tiny">${esc(t.name)}</span>
+            </button>`).join('')}
+        </div>
+      </section>
+
       ${u.isOwner ? `
       <section class="card">
         <div class="card-head"><h3 class="card-title">${icon('crown', 'ico')} Owner tools</h3></div>
@@ -1579,6 +1625,10 @@ async function viewProfile(view) {
     </div>`;
 
   $$('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+  $$('[data-theme-pick]').forEach((b) => b.addEventListener('click', () => {
+    applyTheme(b.dataset.themePick);
+    viewProfile(view);
+  }));
   $('#prof-logout').addEventListener('click', doLogout);
 }
 
@@ -1947,4 +1997,5 @@ document.addEventListener('visibilitychange', () => {
     api('/api/me').then((me) => { state.unread = me.unreadNotifications || 0; updateUnread(); }).catch(() => {});
   }
 });
+applyTheme(currentTheme());
 boot();
