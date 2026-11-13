@@ -169,36 +169,38 @@ export const LESSONS = [
 ];
 
 // Collectible animals. Ollie (the octopus) is the guide and is always available.
-// Everything else unlocks as the learner completes more lessons.
+// Every other animal costs between 3 and 6 sessions of work, so the unlockAt
+// values below are the cumulative session count needed to rescue each one.
+// A "session" is either a finished lesson or a played game round.
 export const ANIMALS = [
   { id: 'octopus', name: 'Ollie the Octopus', emoji: '🐙', unlockAt: 0, fact: 'Ollie is your guide. Octopuses have three hearts and blue blood!' },
-  { id: 'hermitcrab', name: 'Shelly the Hermit Crab', emoji: '🐚', unlockAt: 0, fact: 'A hermit crab swaps its shell for a bigger one as it grows.' },
-  { id: 'seasnail', name: 'Nelly the Sea Snail', emoji: '🐌', unlockAt: 1, fact: 'Sea snails scrape their food with a tongue as rough as sandpaper.' },
-  { id: 'krill', name: 'Kris the Krill', emoji: '🦐', unlockAt: 1, fact: 'Krill are tiny, yet a single whale can eat millions of them a day.' },
-  { id: 'starfish', name: 'Stella the Starfish', emoji: '⭐', unlockAt: 2, fact: 'A starfish has no brain and can grow back an arm.' },
-  { id: 'crab', name: 'Claude the Crab', emoji: '🦀', unlockAt: 2, fact: 'Crabs walk sideways and can regrow a lost claw.' },
-  { id: 'lobster', name: 'Larry the Lobster', emoji: '🦞', unlockAt: 3, fact: 'Lobsters can live for more than 100 years.' },
-  { id: 'oyster', name: 'Orla the Oyster', emoji: '🦪', unlockAt: 3, fact: 'One oyster can filter about 200 litres of water in a day.' },
-  { id: 'coral', name: 'Coco the Coral', emoji: '🪸', unlockAt: 4, fact: 'Coral looks like a plant, but it is a colony of tiny animals.' },
-  { id: 'seahorse', name: 'Sammy the Seahorse', emoji: '🐴', unlockAt: 4, fact: 'Seahorse males carry and give birth to the babies.' },
-  { id: 'clownfish', name: 'Coral the Clownfish', emoji: '🐠', unlockAt: 4, fact: 'Clownfish live safely among the tentacles of sea anemones.' },
-  { id: 'fish', name: 'Finn the Flying Fish', emoji: '🐟', unlockAt: 5, fact: 'Flying fish can glide above the water for over 200 metres.' },
-  { id: 'pufferfish', name: 'Pearl the Pufferfish', emoji: '🐡', unlockAt: 5, fact: 'Pufferfish can inflate to three times their normal size.' },
-  { id: 'squid', name: 'Quincy the Squid', emoji: '🦑', unlockAt: 6, fact: 'Squid have three hearts and can change colour in a blink.' },
-  { id: 'jellyfish', name: 'Jelly the Jellyfish', emoji: '🪼', unlockAt: 6, fact: 'Jellyfish drifted in the sea long before the dinosaurs appeared.' },
-  { id: 'turtle', name: 'Tina the Turtle', emoji: '🐢', unlockAt: 7, fact: 'Sea turtles have existed for more than 100 million years.' },
-  { id: 'otter', name: 'Otto the Sea Otter', emoji: '🦦', unlockAt: 7, fact: 'Sea otters hold hands while they sleep so they do not drift apart.' },
-  { id: 'penguin', name: 'Penny the Penguin', emoji: '🐧', unlockAt: 8, fact: 'Penguins cannot fly, but they are amazing swimmers.' },
-  { id: 'seal', name: 'Sam the Seal', emoji: '🦭', unlockAt: 8, fact: 'Elephant seals can hold their breath for almost two hours.' },
-  { id: 'dolphin', name: 'Dotty the Dolphin', emoji: '🐬', unlockAt: 8, fact: 'Dolphins call each other by their own unique names.' },
-  { id: 'greywhale', name: 'Gulp the Grey Whale', emoji: '🐳', unlockAt: 9, fact: 'Grey whales swim more than 20,000 kilometres every year.' },
-  { id: 'crocodile', name: 'Croco the Saltwater Crocodile', emoji: '🐊', unlockAt: 9, fact: 'Saltwater crocodiles swim far out into the open ocean.' },
-  { id: 'whale', name: 'Wally the Whale', emoji: '🐋', unlockAt: 10, fact: 'A blue whale\'s heart is as big as a small car.' },
-  { id: 'leatherback', name: 'Sheldon the Leatherback Turtle', emoji: '🐢', unlockAt: 10, fact: 'Leatherback turtles dive deeper than 1,000 metres to hunt jellyfish.' },
-  { id: 'shark', name: 'Rex the Reef Shark', emoji: '🦈', unlockAt: 11, fact: 'Sharks existed before trees did. Now that is old school!' },
-  { id: 'dumbo', name: 'Inky the Dumbo Octopus', emoji: '🐙', unlockAt: 11, fact: 'The dumbo octopus flaps its fins like ears to glide through the deep.' },
-  { id: 'hammerhead', name: 'Hammy the Hammerhead Shark', emoji: '🦈', unlockAt: 12, fact: 'A hammerhead can see almost all the way around itself.' },
-  { id: 'stingray', name: 'Sandy the Stingray', emoji: '🥏', unlockAt: 12, fact: 'Stingrays are close relatives of sharks.' }
+  { id: 'hermitcrab', name: 'Shelly the Hermit Crab', emoji: '🐚', unlockAt: 3, fact: 'A hermit crab swaps its shell for a bigger one as it grows.' },
+  { id: 'seasnail', name: 'Nelly the Sea Snail', emoji: '🐌', unlockAt: 7, fact: 'Sea snails scrape their food with a tongue as rough as sandpaper.' },
+  { id: 'krill', name: 'Kris the Krill', emoji: '🦐', unlockAt: 12, fact: 'Krill are tiny, yet a single whale can eat millions of them a day.' },
+  { id: 'starfish', name: 'Stella the Starfish', emoji: '⭐', unlockAt: 15, fact: 'A starfish has no brain and can grow back an arm.' },
+  { id: 'crab', name: 'Claude the Crab', emoji: '🦀', unlockAt: 21, fact: 'Crabs walk sideways and can regrow a lost claw.' },
+  { id: 'lobster', name: 'Larry the Lobster', emoji: '🦞', unlockAt: 25, fact: 'Lobsters can live for more than 100 years.' },
+  { id: 'oyster', name: 'Orla the Oyster', emoji: '🦪', unlockAt: 30, fact: 'One oyster can filter about 200 litres of water in a day.' },
+  { id: 'coral', name: 'Coco the Coral', emoji: '🪸', unlockAt: 33, fact: 'Coral looks like a plant, but it is a colony of tiny animals.' },
+  { id: 'seahorse', name: 'Sammy the Seahorse', emoji: '🐴', unlockAt: 37, fact: 'Seahorse males carry and give birth to the babies.' },
+  { id: 'clownfish', name: 'Coral the Clownfish', emoji: '🐠', unlockAt: 43, fact: 'Clownfish live safely among the tentacles of sea anemones.' },
+  { id: 'fish', name: 'Finn the Flying Fish', emoji: '🐟', unlockAt: 48, fact: 'Flying fish can glide above the water for over 200 metres.' },
+  { id: 'pufferfish', name: 'Pearl the Pufferfish', emoji: '🐡', unlockAt: 51, fact: 'Pufferfish can inflate to three times their normal size.' },
+  { id: 'squid', name: 'Quincy the Squid', emoji: '🦑', unlockAt: 55, fact: 'Squid have three hearts and can change colour in a blink.' },
+  { id: 'jellyfish', name: 'Jelly the Jellyfish', emoji: '🪼', unlockAt: 60, fact: 'Jellyfish drifted in the sea long before the dinosaurs appeared.' },
+  { id: 'turtle', name: 'Tina the Turtle', emoji: '🐢', unlockAt: 66, fact: 'Sea turtles have existed for more than 100 million years.' },
+  { id: 'otter', name: 'Otto the Sea Otter', emoji: '🦦', unlockAt: 70, fact: 'Sea otters hold hands while they sleep so they do not drift apart.' },
+  { id: 'penguin', name: 'Penny the Penguin', emoji: '🐧', unlockAt: 73, fact: 'Penguins cannot fly, but they are amazing swimmers.' },
+  { id: 'seal', name: 'Sam the Seal', emoji: '🦭', unlockAt: 78, fact: 'Elephant seals can hold their breath for almost two hours.' },
+  { id: 'dolphin', name: 'Dotty the Dolphin', emoji: '🐬', unlockAt: 82, fact: 'Dolphins call each other by their own unique names.' },
+  { id: 'greywhale', name: 'Gulp the Grey Whale', emoji: '🐳', unlockAt: 88, fact: 'Grey whales swim more than 20,000 kilometres every year.' },
+  { id: 'crocodile', name: 'Croco the Saltwater Crocodile', emoji: '🐊', unlockAt: 93, fact: 'Saltwater crocodiles swim far out into the open ocean.' },
+  { id: 'whale', name: 'Wally the Whale', emoji: '🐋', unlockAt: 96, fact: 'A blue whale\'s heart is as big as a small car.' },
+  { id: 'leatherback', name: 'Sheldon the Leatherback Turtle', emoji: '🐢', unlockAt: 100, fact: 'Leatherback turtles dive deeper than 1,000 metres to hunt jellyfish.' },
+  { id: 'shark', name: 'Rex the Reef Shark', emoji: '🦈', unlockAt: 106, fact: 'Sharks existed before trees did. Now that is old school!' },
+  { id: 'dumbo', name: 'Inky the Dumbo Octopus', emoji: '🐙', unlockAt: 111, fact: 'The dumbo octopus flaps its fins like ears to glide through the deep.' },
+  { id: 'hammerhead', name: 'Hammy the Hammerhead Shark', emoji: '🦈', unlockAt: 115, fact: 'A hammerhead can see almost all the way around itself.' },
+  { id: 'stingray', name: 'Sandy the Stingray', emoji: '🥏', unlockAt: 118, fact: 'Stingrays are close relatives of sharks.' }
 ];
 
 // Achievement badges, derived from the learner's statistics.

@@ -83,6 +83,20 @@ function publicAnimal(a, unlockedIds) {
   };
 }
 
+// A session is a finished lesson or a played game round. Rescues every animal
+// whose cumulative session cost has been reached and reports the new ones.
+function unlockAnimals(user) {
+  const sessions = user.stats.sessions || 0;
+  const newlyUnlocked = [];
+  ANIMALS.forEach((a) => {
+    if (sessions >= a.unlockAt && !user.unlocked.includes(a.id)) {
+      user.unlocked.push(a.id);
+      newlyUnlocked.push({ id: a.id, name: a.name, emoji: a.emoji, fact: a.fact });
+    }
+  });
+  return newlyUnlocked;
+}
+
 // A safe, public representation of a user (never leaks salt/hash).
 function publicUser(user, { includeEmail = false } = {}) {
   const stats = user.stats;
@@ -276,6 +290,7 @@ async function handleApi(req, res, url) {
       : Math.round(lesson.xp * (0.5 + 0.5 * accuracy));
 
     stats.xp += xpGained;
+    stats.sessions = (stats.sessions || 0) + 1;   // finishing a lesson is a session
     if (!alreadyDone) {
       stats.completed.push(lesson.id);
       stats.lessonsCompleted = stats.completed.length;
@@ -290,13 +305,7 @@ async function handleApi(req, res, url) {
     }
     user.lastActiveAt = new Date().toISOString();
 
-    const newlyUnlocked = [];
-    ANIMALS.forEach((a) => {
-      if (stats.lessonsCompleted >= a.unlockAt && !user.unlocked.includes(a.id)) {
-        user.unlocked.push(a.id);
-        newlyUnlocked.push({ id: a.id, name: a.name, emoji: a.emoji, fact: a.fact });
-      }
-    });
+    const newlyUnlocked = unlockAnimals(user);
 
     store.save();
     return send(res, 200, {
@@ -335,9 +344,19 @@ async function handleApi(req, res, url) {
     if (!GAMES.some((g) => g.id === game)) return send(res, 400, { error: 'Unknown game.' });
     const score = Math.max(0, Math.min(Math.round(Number(body.score) || 0), 100000));
     const { best, improved } = store.setGameScore(user.id, game, score);
+
+    // Playing a game round also counts as a session and can rescue an animal.
+    user.stats.sessions = (user.stats.sessions || 0) + 1;
+    user.lastActiveAt = new Date().toISOString();
+    const newlyUnlocked = unlockAnimals(user);
+    store.save();
+
     const ranked = store.gameRanking(game);
     const myRank = ranked.find((r) => r.userId === user.id);
-    return send(res, 200, { best, improved, rank: myRank ? myRank.rank : null, total: ranked.length });
+    return send(res, 200, {
+      best, improved, rank: myRank ? myRank.rank : null, total: ranked.length,
+      newlyUnlocked, user: publicUser(user, { includeEmail: true })
+    });
   }
 
   if (pathname === '/api/rankings' && method === 'GET') {

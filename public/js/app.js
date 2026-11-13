@@ -670,9 +670,9 @@ function viewDashboard(view) {
             <div style="flex:1;min-width:0">
               <div style="font-weight:700">${esc(nextAnimal.name)}</div>
               <div class="tiny muted" style="margin-top:3px">
-                ${Math.max(0, nextAnimal.unlockAt - stats.lessonsCompleted) === 0
+                ${Math.max(0, nextAnimal.unlockAt - (stats.sessions || 0)) === 0
                   ? 'Unlocked!'
-                  : `Finish ${nextAnimal.unlockAt - stats.lessonsCompleted} more lesson${nextAnimal.unlockAt - stats.lessonsCompleted === 1 ? '' : 's'} to rescue it.`}
+                  : `${nextAnimal.unlockAt - (stats.sessions || 0)} more session${nextAnimal.unlockAt - (stats.sessions || 0) === 1 ? '' : 's'} to rescue it.`}
               </div>
             </div>
           </div>` : `<p class="tiny muted">You have rescued every ocean animal. Legendary!</p>`}
@@ -1044,12 +1044,13 @@ function viewAnimals(view) {
   const animals = state.content.animals;
   const unlocked = animals.filter((a) => a.unlocked).length;
   const nextAnimal = animals.find((a) => !a.unlocked);
-  const remaining = nextAnimal ? Math.max(0, nextAnimal.unlockAt - state.user.stats.lessonsCompleted) : 0;
+  const sessions = state.user.stats.sessions || 0;
+  const remaining = nextAnimal ? Math.max(0, nextAnimal.unlockAt - sessions) : 0;
 
   view.innerHTML = `
     <div class="page-head">
       <h1>My Animals</h1>
-      <p>Every lesson you finish rescues a new friend from Ollie's ocean.</p>
+      <p>Every session you finish rescues a new friend from Ollie's ocean.</p>
     </div>
 
     <div class="stack">
@@ -1060,7 +1061,7 @@ function viewAnimals(view) {
             <h3 style="font-size:18px">Ollie's ocean</h3>
             <p class="tiny muted" style="margin-top:6px">
               You have rescued <b>${unlocked}</b> of <b>${animals.length}</b> animals.
-              ${nextAnimal ? ` ${remaining} more lesson${remaining === 1 ? '' : 's'} to free ${esc(nextAnimal.name)}.` : ' The whole ocean is free!'}
+              ${nextAnimal ? ` ${remaining} more session${remaining === 1 ? '' : 's'} to free ${esc(nextAnimal.name)}.` : ' The whole ocean is free!'}
             </p>
             <div class="bar" style="margin-top:12px"><div class="bar-fill" style="width:${Math.round((unlocked / animals.length) * 100)}%"></div></div>
           </div>
@@ -1073,7 +1074,7 @@ function viewAnimals(view) {
             ${a.unlocked ? '' : `<span class="lock">${icon('lock', 'ico ico-sm')}</span>`}
             <div class="animal-emoji">${a.emoji}</div>
             <div class="animal-name">${a.unlocked ? esc(a.name) : 'Mystery animal'}</div>
-            <div class="animal-fact">${a.unlocked ? esc(a.fact) : `Unlocks after ${a.unlockAt} lesson${a.unlockAt === 1 ? '' : 's'}.`}</div>
+            <div class="animal-fact">${a.unlocked ? esc(a.fact) : `Unlocks in ${Math.max(0, a.unlockAt - sessions)} session${Math.max(0, a.unlockAt - sessions) === 1 ? '' : 's'}.`}</div>
           </div>`).join('')}
       </div>
     </div>`;
@@ -1431,13 +1432,18 @@ function startMemory(wrap, game, bank) {
 /* ------------------------------ game: finish ------------------------------ */
 
 async function finishGame(game, score, { reason } = {}) {
-  let res = { best: score, improved: false, rank: null, total: 0 };
+  let res = { best: score, improved: false, rank: null, total: 0, newlyUnlocked: [] };
   try {
     res = await api('/api/games/score', { method: 'POST', body: { game: game.id, score } });
   } catch (err) {
     toast(err.message, 'err');
   }
-  if (res.improved) confetti();
+  if (!res.newlyUnlocked) res.newlyUnlocked = [];
+  if (res.improved || res.newlyUnlocked.length) confetti();
+  if (res.user) {
+    state.user = res.user;
+    try { state.content = await api('/api/content'); } catch { /* keep the old content */ }
+  }
 
   openModal(`
     <div class="modal-emoji">${res.improved ? '🏅' : '🎮'}</div>
@@ -1447,6 +1453,18 @@ async function finishGame(game, score, { reason } = {}) {
       ${statCard('star', `${score}`, `${game.scoreUnit} this round`)}
       ${statCard('crown', `${res.best}`, 'Your best')}
     </div>
+    ${res.newlyUnlocked.length ? `
+      <div style="margin-top:22px;text-align:left">
+        <div style="font-weight:700;font-size:15.5px">New animal rescued</div>
+        <div class="unlock-list">
+          ${res.newlyUnlocked.map((a) => `
+            <div class="unlock-item">
+              <div class="u-emoji">${a.emoji}</div>
+              <div><div style="font-weight:700">${esc(a.name)}</div>
+              <div class="tiny muted">${esc(a.fact)}</div></div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}
     ${res.rank ? `<p class="tiny muted" style="margin-top:14px">You are ranked <b>#${res.rank}</b> of ${res.total} player${res.total === 1 ? '' : 's'} in ${esc(game.name)}.</p>` : ''}
     <div class="m-actions">
       <button class="btn btn-primary" id="gm-again">${icon('refresh', 'ico ico-sm')} Play again</button>

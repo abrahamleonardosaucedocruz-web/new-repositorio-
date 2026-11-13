@@ -45,7 +45,23 @@ export function load() {
     db.integrity.hmackey = crypto.randomBytes(32).toString('hex');
     save();
   }
+  migrateUnlockRule();
   return db;
+}
+
+// One-off migration: animals now cost 3-6 sessions of work (a session is a
+// finished lesson or a played game round). Collections are reset so everyone
+// starts again with only Ollie, and the session counter begins at zero.
+function migrateUnlockRule() {
+  if (db.integrity.unlockRule === 2) return;
+  db.users.forEach((u) => {
+    u.unlocked = ['octopus'];
+    if (!u.stats) u.stats = emptyStats();
+    u.stats.sessions = 0;
+  });
+  db.integrity.unlockRule = 2;
+  save();
+  console.log('[store] Unlock rule updated: every animal now costs 3-6 sessions. Collections were reset.');
 }
 
 export function save() {
@@ -82,7 +98,7 @@ export function newId(prefix = 'u') {
 }
 
 export function emptyStats() {
-  return { xp: 0, lessonsCompleted: 0, perfectLessons: 0, streak: 0, lastLessonDate: null, completed: [] };
+  return { xp: 0, lessonsCompleted: 0, perfectLessons: 0, streak: 0, lastLessonDate: null, completed: [], sessions: 0 };
 }
 
 export function findUserByEmail(email) {
